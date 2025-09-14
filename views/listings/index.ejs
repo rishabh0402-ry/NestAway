@@ -1,0 +1,262 @@
+<% layout("/layouts/boilerplate") %>
+
+<style>
+  #filters {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    margin-top: 1rem;
+  }
+
+  .filter {
+    text-align: center;
+    margin-right: 2rem;
+    margin-top: 1rem;
+    opacity: 0.7;
+  }
+
+  .filter:hover {
+    opacity: 1;
+    cursor: pointer;
+  }
+
+  .filter p {
+    font-size: 0.8rem;
+  }
+
+  .tax-info {
+    display: none;
+  }
+  
+  .tax-switch {
+    border: 1px solid black;
+    border-radius: 1rem;
+    padding: 1rem;
+    height: 3.25rem;
+    margin-left: 5rem;
+    display: flex;
+    align-items: center;
+  }
+
+  /* No Results Styling */
+  .no-results-container {
+    padding: 3rem 2rem;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border-radius: 1rem;
+    margin: 2rem 0;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+
+  .no-results-icon {
+    opacity: 0.6;
+  }
+
+  .suggestions ul li {
+    margin-bottom: 0.5rem;
+    font-size: 0.95rem;
+  }
+
+  .suggestions a {
+    color: #fe424d !important;
+    font-weight: 500;
+  }
+
+  .suggestions a:hover {
+    color: #ff6a3d !important;
+    text-decoration: underline !important;
+  }
+
+  .search-results-info {
+    background: #f8f9fa;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    border-left: 4px solid #fe424d;
+  }
+
+  /* Toggle button hidden by default */
+  .filters-toggle {
+    display: none;
+    background:  #fe424d;
+    color: white;
+    padding: 0.6rem 1rem;
+    border: none;
+    border-radius: 25px;
+    font-size: 1rem;
+    cursor: pointer;
+    margin-top: 1rem;
+  }
+
+  .filters-toggle i {
+    margin-right: 5px;
+  }
+
+  /* ✅ Responsive */
+  @media (max-width: 768px) {
+    .filters-toggle {
+      display: inline-block;
+    }
+
+    #filters {
+      display: none; /* hidden on mobile by default */
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    #filters.show {
+      display: flex; /* show only when toggled */
+    }
+  }
+</style>
+
+<!-- ✅ Filters Toggle Button (outside filters) -->
+<button class="filters-toggle" onclick="toggleFilters()">
+  <i class="fa-solid fa-sliders"></i> Filters
+</button>
+
+<!-- ✅ Filters Section -->
+<div id="filters">
+  <div class="filter">
+    <div><i class="fa-solid fa-fire"></i></div>
+    <p>Trending</p>
+  </div>
+  <div class="filter">
+    <div><i class="fa-solid fa-bed"></i></div>
+    <p>Rooms</p>
+  </div>
+  <div class="filter">
+    <div><i class="fa-solid fa-mountain"></i></div>
+    <p>Mountains</p>
+  </div>
+  <div class="filter">
+    <div><i class="fa-solid fa-mountain-city"></i></div>
+    <p>Iconic Cities</p>
+  </div>
+  <div class="filter">
+    <div><i class="fa-solid fa-umbrella-beach"></i></div>
+    <p>Beaches</p>
+  </div>
+  <div class="filter">
+    <div><i class="fa-solid fa-person-swimming"></i></div>
+    <p>Swimming Pool</p>
+  </div>
+  <div class="filter">
+    <div><i class="fa-solid fa-tents"></i></div>
+    <p>Camping</p>
+  </div>
+  <div class="filter">
+    <div><i class="fa-solid fa-wheat-awn"></i></div>
+    <p>Farms</p>
+  </div>
+  <div class="filter">
+    <div><i class="fa-solid fa-snowflake"></i></div>
+    <p>Arctic</p>
+  </div>
+  <div class="filter">
+    <div><i class="fa-solid fa-hotel"></i></div>
+    <p>Hotels</p>
+  </div>
+  <div class="filter">
+    <div><i class="fa-brands fa-fort-awesome"></i></div>
+    <p>Castles</p>
+  </div>
+
+  <div class="tax-switch">
+    <div class="form-check-reverse form-switch">
+      <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault">
+      <label class="form-check-label" for="flexSwitchCheckDefault">Display total after taxes</label>
+    </div>
+  </div>
+</div>
+
+<!-- ✅ Search Results Info -->
+<% if (typeof hasSearchParams !== 'undefined' && hasSearchParams) { %>
+  <div class="search-results-info mt-3 mb-3">
+    <h5 class="text-muted">
+      <% if (typeof searchParams !== 'undefined' && searchParams.country && searchParams.location) { %>
+        Search results for "<%= searchParams.location %>" in <%= searchParams.country %>
+      <% } else if (typeof searchParams !== 'undefined' && searchParams.country) { %>
+        Search results for country: <%= searchParams.country %>
+      <% } else if (typeof searchParams !== 'undefined' && searchParams.location) { %>
+        Search results for location: "<%= searchParams.location %>"
+      <% } %>
+      <span class="badge bg-primary ms-2"><%= allListings.length %> result<%= allListings.length !== 1 ? 's' : '' %></span>
+    </h5>
+  </div>
+<% } %>
+
+<!-- ✅ No Results Message -->
+<% if (allListings.length === 0) { %>
+  <div class="no-results-container text-center mt-5">
+    <div class="no-results-icon mb-4">
+      <i class="fa-solid fa-search fa-3x text-muted"></i>
+    </div>
+    <h3 class="text-muted mb-3">No Results Found</h3>
+    <% if (typeof hasSearchParams !== 'undefined' && hasSearchParams) { %>
+      <p class="text-muted mb-4">
+        <% if (typeof searchParams !== 'undefined' && searchParams.country && searchParams.location) { %>
+          Sorry, we couldn't find any listings for "<%= searchParams.location %>" in <%= searchParams.country %>.
+        <% } else if (typeof searchParams !== 'undefined' && searchParams.country) { %>
+          Sorry, we couldn't find any listings in <%= searchParams.country %>.
+        <% } else if (typeof searchParams !== 'undefined' && searchParams.location) { %>
+          Sorry, we couldn't find any listings for "<%= searchParams.location %>".
+        <% } else { %>
+          Sorry, we couldn't find any listings matching your search criteria.
+        <% } %>
+      </p>
+      <div class="suggestions">
+        <p class="text-muted mb-3">Try:</p>
+        <ul class="list-unstyled text-muted">
+          <li>• Checking your spelling</li>
+          <li>• Using different keywords</li>
+          <li>• Searching in a different country</li>
+          <li>• <a href="/listings" class="text-decoration-none">Browse all listings</a></li>
+        </ul>
+      </div>
+    <% } else { %>
+      <p class="text-muted mb-4">No listings are currently available.</p>
+      <a href="/listings/new" class="btn btn-primary">
+        <i class="fa-solid fa-plus me-2"></i>Create the First Listing
+      </a>
+    <% } %>
+  </div>
+<% } else { %>
+  <!-- ✅ Listings -->
+  <div class="row row-cols-lg-3 row-cols-md-2 row-cols-sm-1 mt-3">
+    <% for(let listing of allListings) { %>
+      <a href="/listings/<%= listing._id %>" class="listing-link">
+        <div class="card col listing-card">
+          <% if (listing.image && listing.image.url) { %>
+            <img src="<%= listing.image.url %>" class="card-img-top" alt="listing_image" style="height: 20rem;">
+          <% } else { %>
+            <img src="https://via.placeholder.com/300x200?text=No+Image" class="card-img-top" alt="no_image" style="height: 20rem;">
+          <% } %>
+          <div class="card-img-overlay"></div>
+          <div class="card-body">
+            <p class="card-text">
+              <b><%= listing.title %></b> <br />
+              &#8377 <%= listing.price.toLocaleString("en-IN") %> / night
+              <i class="tax-info"> &nbsp;&nbsp;+18% GST</i>
+            </p>
+          </div>
+        </div>
+      </a>
+    <% } %>
+  </div>
+<% } %>
+
+<script>
+  // ✅ Tax toggle
+  let taxSwitch = document.getElementById('flexSwitchCheckDefault');
+
+  taxSwitch.addEventListener('click', () => {
+    let taxInfos = document.querySelectorAll('.tax-info');
+    taxInfos.forEach(info => {
+      info.style.display = (info.style.display !== "inline") ? "inline" : "none";
+    });
+  });
+
+  // ✅ Filters toggle
+  function toggleFilters() {
+    document.getElementById("filters").classList.toggle("show");
+  }
+</script>

@@ -1,0 +1,155 @@
+<style>
+   .search-container {
+    background: #fff;
+    border-radius: 50px;
+    padding: 0.3rem 0.6rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    max-width: 600px;
+    margin: auto;
+}
+
+.search-inp {
+    border: none;
+    outline: none;
+    border-radius: 25px;
+    padding: 0.6rem 1rem;
+    font-size: 1rem;
+    min-width: 140px;
+}
+
+.dropdown .btn {
+    border-radius: 25px;
+    padding: 0.6rem 1rem;
+    font-size: 1rem;
+    background: #f8f9fa;
+    border: 1px solid #ddd;
+    min-width: 140px;
+    text-align: left;
+}
+
+.search-btn {
+    background: linear-gradient(135deg, #fe424d, #ff6a3d);
+    color: #fff;
+    border: none;
+    border-radius: 50%;       /* always circle */
+    width: 50px;
+    height: 50px;
+    flex: 0 0 50px;           /* prevent flexbox stretching */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.search-btn:hover {
+    background: linear-gradient(135deg, #ff6a3d, #fe424d);
+    transform: scale(1.08);
+    box-shadow: 0 6px 18px rgba(254,66,77,0.25);
+}
+
+/* --- Responsive adjustments --- */
+@media (max-width: 768px) {
+    .search-container {
+        flex-direction: column;
+        gap: 0.7rem;
+        width: 100%;
+    }
+
+    .search-inp,
+    .dropdown .btn {
+        width: 100% !important;
+    }
+
+    .search-btn {
+        width: 50px;          /* keep circle */
+        height: 50px;
+        border-radius: 50%;
+        align-self: center;   /* center align in column */
+    }
+}
+
+</style>
+
+<nav class="navbar navbar-expand-md bg-body-light border-bottom sticky-top">
+    <div class="container-fluid">
+        <!-- Brand -->
+        <a class="navbar-brand" href="/listings">
+            <i class="fa-regular fa-compass"></i>
+        </a>
+
+        <!-- Toggler -->
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <!-- Navbar content -->
+        <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+            
+            <!-- Left side nav -->
+            <div class="navbar-nav">
+                <a class="nav-link" href="/listings">Explore</a>
+            </div>
+
+            <!-- Search bar -->
+            <div class="navbar-nav mx-auto search-container">
+                <form class="d-flex align-items-center" action="/listings/search" method="GET" style="gap:0.5rem;">
+                    
+                    <!-- Country dropdown -->
+                    <div class="dropdown">
+                        <button class="btn btn-light dropdown-toggle search-inp" type="button" id="countryDropdown" data-bs-toggle="dropdown" aria-expanded="false" style="min-width:140px;">
+                            <span id="selectedCountry">Country</span>
+                        </button>
+                        <ul class="dropdown-menu" aria-labelledby="countryDropdown">
+                            <li><a class="dropdown-item" href="#" data-value="">Country</a></li>
+                            <li><a class="dropdown-item" href="#" data-value="India">India</a></li>
+                            <li><a class="dropdown-item" href="#" data-value="United States">United States</a></li>
+                            <li><a class="dropdown-item" href="#" data-value="France">France</a></li>
+                            <li><a class="dropdown-item" href="#" data-value="Italy">Italy</a></li>
+                        </ul>
+                        <input type="hidden" name="country" id="countryInput">
+                    </div>
+
+                    <!-- Location input -->
+                    <input class="form-control search-inp" type="search" name="location" placeholder="Location" required style="min-width:140px;">
+
+                    <!-- Search button -->
+                    <button class="search-btn" type="submit">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                    </button>
+                </form>
+            </div>
+
+            <!-- Right side nav -->
+            <div class="navbar-nav ms-auto">
+                <a class="nav-link" href="/listings/new">Upload & Go Live</a>
+                
+                <% if (typeof currentUser === 'undefined' || !currentUser) { %>
+                    <a class="nav-link" href="/signup"><b>Sign up</b></a>
+                    <a class="nav-link" href="/login"><b>Log in</b></a>
+                <% } else { %>
+                    <a class="nav-link" href="/logout"><b>Log out</b></a>
+                <% } %>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+      document.querySelectorAll('.dropdown-item').forEach(item => {
+        item.addEventListener('click', function (e) {
+          e.preventDefault();
+          document.getElementById('selectedCountry').textContent = this.textContent;
+          document.getElementById('countryInput').value = this.getAttribute('data-value');
+        });
+      });
+    
+      document.getElementById('countryInput').value = "";
+    });
+</script>
